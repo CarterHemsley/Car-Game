@@ -93,8 +93,13 @@
         const obstacleImage = new Image();
         obstacleImage.src = 'https://testupdateinput-as-alert.carterhemsley.repl.co/ber.png';  // Replace with the actual URL for your obstacle image
 
-        let carX = canvas.width / 2 - carWidth / 2;
-        let carY = canvas.height - carHeight - 10;
+        // Adjusted car dimensions
+        const aspectRatio = carImage.width / carImage.height;
+        const adjustedCarWidth = 50;
+        const adjustedCarHeight = adjustedCarWidth / aspectRatio;
+
+        let carX = canvas.width / 2 - adjustedCarWidth / 2;
+        let carY = canvas.height - adjustedCarHeight - 10;
         let carSpeed = 3;
         let obstacleSpeed = 3;
         let isMovingLeft = false;
@@ -119,7 +124,7 @@
             ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
             // Draw car
-            ctx.drawImage(carImage, carX, carY, carWidth, carHeight);
+            ctx.drawImage(carImage, carX, carY, adjustedCarWidth, adjustedCarHeight);
 
             // Draw obstacles
             for (let obstacle of obstacles) {
@@ -133,7 +138,7 @@
                 moveCar();
                 moveObstacles();
                 if (carX < 0) carX = 0;
-                if (carX > canvas.width - carWidth) carX = canvas.width - carWidth;
+                if (carX > canvas.width - adjustedCarWidth) carX = canvas.width - adjustedCarWidth;
             }
 
             requestAnimationFrame(updateGameArea);
@@ -171,9 +176,9 @@
                 // Check for collision with the car
                 if (
                     carX < obstacle.x + obstacle.width &&
-                    carX + carWidth > obstacle.x &&
+                    carX + adjustedCarWidth > obstacle.x &&
                     carY < obstacle.y + obstacle.height &&
-                    carY + carHeight > obstacle.y
+                    carY + adjustedCarHeight > obstacle.y
                 ) {
                     // Game over
                     showYouDiedScreen();
@@ -224,8 +229,8 @@
 
         function resetGame() {
             youDiedScreen.style.display = "none";
-            carX = canvas.width / 2 - carWidth / 2;
-            carY = canvas.height - carHeight - 10;
+            carX = canvas.width / 2 - adjustedCarWidth / 2;
+            carY = canvas.height - adjustedCarHeight - 10;
             obstacles = [];
             score = 0;
             scoreElement.textContent = score;
@@ -279,3 +284,4 @@
     </script>
 </body>
 </html>
+
