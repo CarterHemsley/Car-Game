@@ -85,21 +85,14 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        const carWidth = 50;
-        const carHeight = 80;
-        const roadWidth = 200;
         const carImage = new Image();
         carImage.src = 'https://i.imgur.com/Ucycf5C.png';  // Replace with the actual URL for your car image
-        const obstacleImage = new Image();
-        obstacleImage.src = 'https://testupdateinput-as-alert.carterhemsley.repl.co/ber.png';  // Replace with the actual URL for your obstacle image
-
-        // Adjusted car dimensions
         const aspectRatio = carImage.width / carImage.height;
-        const adjustedCarWidth = 50;
-        const adjustedCarHeight = adjustedCarWidth / aspectRatio;
+        const carWidth = 50;
+        const carHeight = carWidth / aspectRatio;
 
-        let carX = canvas.width / 2 - adjustedCarWidth / 2;
-        let carY = canvas.height - adjustedCarHeight - 10;
+        let carX = canvas.width / 2 - carWidth / 2;
+        let carY = canvas.height - carHeight - 10;
         let carSpeed = 3;
         let obstacleSpeed = 3;
         let isMovingLeft = false;
@@ -124,11 +117,12 @@
             ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
             // Draw car
-            ctx.drawImage(carImage, carX, carY, adjustedCarWidth, adjustedCarHeight);
+            ctx.drawImage(carImage, carX, carY, carWidth, carHeight);
 
             // Draw obstacles
             for (let obstacle of obstacles) {
-                ctx.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                ctx.fillStyle = "red";
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             }
         }
 
@@ -138,7 +132,7 @@
                 moveCar();
                 moveObstacles();
                 if (carX < 0) carX = 0;
-                if (carX > canvas.width - adjustedCarWidth) carX = canvas.width - adjustedCarWidth;
+                if (carX > canvas.width - carWidth) carX = canvas.width - carWidth;
             }
 
             requestAnimationFrame(updateGameArea);
@@ -176,9 +170,9 @@
                 // Check for collision with the car
                 if (
                     carX < obstacle.x + obstacle.width &&
-                    carX + adjustedCarWidth > obstacle.x &&
+                    carX + carWidth > obstacle.x &&
                     carY < obstacle.y + obstacle.height &&
-                    carY + adjustedCarHeight > obstacle.y
+                    carY + carHeight > obstacle.y
                 ) {
                     // Game over
                     showYouDiedScreen();
@@ -229,8 +223,8 @@
 
         function resetGame() {
             youDiedScreen.style.display = "none";
-            carX = canvas.width / 2 - adjustedCarWidth / 2;
-            carY = canvas.height - adjustedCarHeight - 10;
+            carX = canvas.width / 2 - carWidth / 2;
+            carY = canvas.height - carHeight - 10;
             obstacles = [];
             score = 0;
             scoreElement.textContent = score;
@@ -284,4 +278,3 @@
     </script>
 </body>
 </html>
-
