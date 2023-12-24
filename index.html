@@ -14,6 +14,9 @@
             display: block;
             margin: 0 auto;
             border: 2px solid #000;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         #youDiedScreen {
@@ -26,6 +29,7 @@
             padding: 20px;
             text-align: center;
             border: 2px solid #000;
+            z-index: 2;
         }
 
         #resetButton {
@@ -38,29 +42,35 @@
             cursor: pointer;
         }
 
-        #score {
+        #scoreContainer {
             position: absolute;
             top: 10px;
-            right: 10px;
+            left: 10px;
             font-size: 20px;
             z-index: 1;
+            color: white;
         }
 
-        #highScore {
+        #highScoreContainer {
             position: absolute;
             top: 40px;
-            right: 10px;
+            left: 10px;
             font-size: 16px;
             z-index: 1;
+            color: white;
         }
     </style>
     <title>Mobile Racing Game</title>
 </head>
 <body>
-    <canvas id="gameCanvas" width="320" height="480"></canvas>
+    <canvas id="gameCanvas" width="100%" height="100%"></canvas>
 
-    <div id="score">Score: <span id="scoreValue">0</span></div>
-    <div id="highScore">High Score: <span id="highScoreValue">0</span></div>
+    <div id="scoreContainer">
+        Score: <span id="scoreValue">0</span>
+    </div>
+    <div id="highScoreContainer">
+        High Score: <span id="highScoreValue">0</span>
+    </div>
 
     <div id="youDiedScreen">
         <h1>You Died!</h1>
@@ -84,6 +94,7 @@
         let carX = canvas.width / 2 - carWidth / 2;
         let carY = canvas.height - carHeight - 10;
         let carSpeed = 3;
+        let obstacleSpeed = 3;
         let isMovingLeft = false;
         let isMovingRight = false;
 
@@ -153,7 +164,7 @@
 
         function moveObstacles() {
             for (let obstacle of obstacles) {
-                obstacle.y += carSpeed;
+                obstacle.y += obstacleSpeed;
 
                 // Check for collision with the car
                 if (
@@ -193,6 +204,7 @@
             youDiedScreen.style.display = "block";
             finalScoreElement.textContent = score;
             updateHighScore();
+            increaseObstacleSpeed(); // Increase obstacle speed on death
             isGameOver = true;
         }
 
@@ -204,6 +216,10 @@
             }
         }
 
+        function increaseObstacleSpeed() {
+            obstacleSpeed += 0.5; // Increase obstacle speed
+        }
+
         function resetGame() {
             youDiedScreen.style.display = "none";
             carX = canvas.width / 2 - carWidth / 2;
@@ -211,11 +227,31 @@
             obstacles = [];
             score = 0;
             scoreElement.textContent = score;
+            obstacleSpeed = 3; // Reset obstacle speed
             isGameOver = false;
             updateGameArea();
         }
 
-        function handleKeyDown(event) {
+        function handleTouchStart(event) {
+            event.preventDefault();
+            const touchX = event.touches[0].clientX;
+            if (touchX < canvas.width / 2) {
+                moveLeft();
+            } else {
+                moveRight();
+            }
+        }
+
+        function handleTouchEnd(event) {
+            event.preventDefault();
+            stopMoveLeft();
+            stopMoveRight();
+        }
+
+        canvas.addEventListener("touchstart", handleTouchStart);
+        canvas.addEventListener("touchend", handleTouchEnd);
+
+        document.addEventListener("keydown", function (event) {
             switch (event.key) {
                 case "ArrowLeft":
                     moveLeft();
@@ -224,9 +260,9 @@
                     moveRight();
                     break;
             }
-        }
+        });
 
-        function handleKeyUp(event) {
+        document.addEventListener("keyup", function (event) {
             switch (event.key) {
                 case "ArrowLeft":
                     stopMoveLeft();
@@ -235,26 +271,10 @@
                     stopMoveRight();
                     break;
             }
-        }
-
-        canvas.addEventListener("touchstart", function (event) {
-            const touchX = event.touches[0].clientX;
-            if (touchX < canvas.width / 2) {
-                moveLeft();
-            } else {
-                moveRight();
-            }
         });
-
-        canvas.addEventListener("touchend", function (event) {
-            stopMoveLeft();
-            stopMoveRight();
-        });
-
-        document.addEventListener("keydown", handleKeyDown);
-        document.addEventListener("keyup", handleKeyUp);
 
         updateGameArea();
     </script>
 </body>
 </html>
+
